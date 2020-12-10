@@ -4,6 +4,6 @@
 <item
     android:id="@+id/tweet_menu_cadastrar"
     android:title="@string/cadastrar"
-    android:icon="@drawable/ic_check"
+    android:icon="@drawable/ic_save"
     app:showAsAction="always"/>
 </menu>

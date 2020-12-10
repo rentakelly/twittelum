@@ -4,32 +4,43 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModelProvider
 import caelum.com.twittelumapp.databinding.ActivityListaTweetsBinding
-import com.google.android.material.snackbar.Snackbar
+import caelum.com.twittelumapp.modelo.Tweet
+import caelum.com.twittelumapp.viewmodel.TweetViewModel
+import caelum.com.twittelumapp.viewmodel.ViewModelFactory
 
 class ListaTweetsActivity : AppCompatActivity() {
+
+    private val binding: ActivityListaTweetsBinding by lazy {
+        ActivityListaTweetsBinding.inflate(layoutInflater)
+    }
+    private val viewModel: TweetViewModel by lazy {
+        ViewModelProvider(this, ViewModelFactory)[TweetViewModel::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        val binding = ActivityListaTweetsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val tweets = listOf<String>(
-            "tweet 1",
-            "tweet 2",
-            "tweet 3",
-            "tweet 4",
-            "tweet 5",
-            "tweet 6",
-            "tweet 7"
-        )
-
-        val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, tweets)
-
-        binding.listaTweet.adapter = adapter
         binding.fabNovo.setOnClickListener{
-                val intencao = Intent(this, TweetActivity::class.java)
-                startActivity(intencao)
+            val intencao = Intent(this, TweetActivity::class.java)
+
+            startActivity(intencao)
         }
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        val tweetsLiveData: LiveData<List<Tweet>> = viewModel.lista()
+
+        tweetsLiveData.observe(this, { tweets ->
+            val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, tweets)
+
+            binding.listaTweet.adapter = adapter
+
+        })
     }
 }
