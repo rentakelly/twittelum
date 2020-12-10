@@ -1,28 +1,50 @@
 package caelum.com.twittelumapp.activity
 
-import android.R
 import android.content.Intent
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import caelum.com.twittelumapp.activity.viewmodel.TweetViewModel
+import caelum.com.twittelumapp.activity.viewmodel.ViewModelFactory
 import caelum.com.twittelumapp.databinding.ActivityListaBinding
-import com.google.android.material.snackbar.Snackbar
+import com.example.twiitelum.db.TwittelumDatabase
 
 class ListaActivity : AppCompatActivity() {
+    private val viewModel: TweetViewModel by lazy {
+        ViewModelProvider(this, ViewModelFactory).get(TweetViewModel::class.java)
+    }
+
+    private lateinit var binding : ActivityListaBinding
+
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-        val binding = ActivityListaBinding.inflate(layoutInflater)
+        binding = ActivityListaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val tweets = listOf("Agora foi 1", "Agora foi 2", "Agora foi 3", "Agora foi 4", "Agora foi 5" )
-        val adapter = ArrayAdapter<String>(this, R.layout.simple_list_item_1, tweets)
 
-        binding.listaTweet.adapter = adapter
 
         binding.fabAdd.setOnClickListener {
-            val intencao = Intent(this, MainActivity::class.java)
+            val intencao = Intent(this, ActivityMain::class.java)
             startActivity(intencao)
+
+
+
         }
 
+
+
+        viewModel.lista().observe(this, observer())
+
+
     }
+
+    private fun observer(): Observer<List<Tweet>> {
+        return Observer {
+            binding.listaTweet.adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, it)
+        }
+    }
+
+
 }
