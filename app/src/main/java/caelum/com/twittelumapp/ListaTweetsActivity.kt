@@ -1,8 +1,11 @@
 package caelum.com.twittelumapp
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
@@ -24,12 +27,30 @@ class ListaTweetsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val listener = AdapterView.OnItemClickListener {
+                adapter, item, posicao, id ->
+            val tweet = binding.listaTweet.getItemAtPosition(posicao) as Tweet
+            perguntaSePrecisaDeletarEsse(tweet)
+        }
+
+        binding.listaTweet.onItemClickListener = listener
+
         binding.fabNovo.setOnClickListener{
             val intencao = Intent(this, TweetActivity::class.java)
 
             startActivity(intencao)
         }
     }
+
+    private fun perguntaSePrecisaDeletarEsse(tweet: Tweet) {val dialog = AlertDialog.Builder(this)
+        dialog.setMessage("Deseja mesmo apagar esse tweet?")
+        dialog.setTitle("Atenção")
+        dialog.setPositiveButton("Sim") { _: DialogInterface, _: Int -> viewModel.deleta(tweet) }
+        dialog.setNegativeButton("Não", null)
+        dialog.setIcon(R.drawable.ic_alerta)
+        dialog.show()
+    }
+
 
 
     override fun onResume() {
